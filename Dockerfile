@@ -26,4 +26,4 @@ RUN mkdir -p data/raw data/processed data/indexes .cache/embeddings
 ENV PYTHONPATH=/app
 EXPOSE 8000
 
-CMD ["uvicorn", "api.app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+CMD sh -c "uvicorn api.app:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1"
