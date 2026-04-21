@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    container_name: rag-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./.cache:/app/.cache
+    env_file:
+      - .env
+    environment:
+      - PYTHONPATH=/app
+      - LOG_LEVEL=INFO
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  ui:
+    build: .
+    container_name: rag-ui
+    command: streamlit run ui/app.py --server.port=8501 --server.address=0.0.0.0
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/app/data
+      - ./.cache:/app/.cache
+    env_file:
+      - .env
+    environment:
+      - PYTHONPATH=/app
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  data:
+  cache:
